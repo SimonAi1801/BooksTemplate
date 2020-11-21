@@ -10,6 +10,100 @@
         Height="320" Width="690" 
         WindowStyle="ThreeDBorderWindow" BorderThickness="2" 
         BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" ResizeMode="NoResize">
+    <Grid ShowGridLines="False">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="5"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
+        <Label Grid.Row="0" Grid.Column="1"
+               Content="Titel:" Margin="5,5,5,5"
+               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBox Grid.Row="0" Grid.Column="3"
+                 Margin="5,0,0,5" HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 Grid.ColumnSpan="2"
+                 Text="{Binding Path=Title, 
+                 UpdateSourceTrigger=PropertyChanged}"/>
+        <Label Grid.Row="2" Grid.Column="1"
+               Content="Verlag:" Margin="5,5,5,5"
+               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <ComboBox Grid.Row="2" Grid.Column="3"
+                  Margin="5,5,5,5" Grid.ColumnSpan="2"
+                  VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                  ItemsSource="{Binding Path=Publishers,
+                  UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding Path=SelectedPublisher,
+                  UpdateSourceTrigger=PropertyChanged}"/>
+
+        <Label Grid.Row="4" Grid.Column="1"
+               Content="Autoren:" Grid.RowSpan="5"
+               Margin="5,5,5,5"
+               VerticalAlignment="Top" HorizontalAlignment="Center"/>
+        <TextBox Grid.Row="4" Grid.Column="3"
+                 Margin="5,5,5,5" Grid.RowSpan="5"
+                 Text="{Binding Path=Authors,
+                UpdateSourceTrigger=PropertyChanged}"/>
+
+        <ComboBox Grid.Row="4" Grid.Column="4"
+                  Margin="5,5,5,5"
+                  ItemsSource="{Binding Path=Puplishers,
+                UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding Path=SelectedPuplisher,
+                UpdateSourceTrigger=PropertyChanged}"/>
+
+        <Label Grid.Row="10" Grid.Column="1"
+               Content="Isbn:" Margin="5,5,5,5"
+               VerticalAlignment="Center"
+               HorizontalAlignment="Center"/>
+        <TextBox Grid.Row="10" Grid.Column="3"
+                 VerticalAlignment="Center"
+                 Margin="5,5,5,5"
+                 Text="{Binding Path=Isbn,
+                UpdateSourceTrigger=PropertyChanged}"/>
+
+        <Button Grid.Row="4" Grid.Column="6"
+                Content="Hinzufügen"
+                Margin="5,5,5,5"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                Command="{Binding Path=CmdAddAuthor}"/>
+        
+        <Button Grid.Row="6" Grid.Column="6"
+                Content="Entfernen"
+                Margin="5,5,5,5"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                Command="{Binding Path=CmdDeleteAuthor}"/>
+        
+        <Button Grid.Row="12" Grid.Column="6"
+                Content="Buch Speichern"
+                Margin="5,5,5,5"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                Command="{Binding Path=CmdSaveBook}"/>
+    </Grid>
   
 </controls:MetroWindow>
