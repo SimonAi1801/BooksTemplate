@@ -15,10 +15,8 @@ namespace Books.Persistence
             _dbContext = dbContext;
         }
 
-        public Task AddRangeAsync(IEnumerable<Book> books)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task AddRangeAsync(IEnumerable<Book> books)
+        => await _dbContext.AddRangeAsync(books);
     }
 
 }

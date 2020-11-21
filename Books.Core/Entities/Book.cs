@@ -108,7 +108,7 @@ namespace Books.Core.Entities
                                        .Select(_ => _.Key);
             foreach (var duplicate in duplicates)
             {
-                yield return new ValidationResult($"{duplicate.Name} are duplicate", new string[] { nameof(BookAuthors) });
+                yield return new ValidationResult($"{duplicate.Name} are twice authors of the book", new string[] { nameof(BookAuthors) });
             }
         }
     }
