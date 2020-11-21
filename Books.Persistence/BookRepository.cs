@@ -30,7 +30,14 @@ namespace Books.Persistence
                            .OrderBy(_ => _.Title)
                            .ToArrayAsync();
 
-        public async Task<Book[]> GetBooksByFilter(string filterText)
+        public async Task<string[]> GetAllPublishersAsync()
+        => await _dbContext.Books
+                           .Select(b => b.Publishers)
+                           .OrderBy(p => p)
+                           .Distinct()
+                           .ToArrayAsync();
+
+        public async Task<Book[]> GetBooksByFilterAsync(string filterText)
         => await _dbContext.Books
                            .Where(b => EF.Functions.Like(b.Title, $"%{filterText}%"))
                            .Include(b => b.BookAuthors)

@@ -121,7 +121,7 @@ namespace Books.Wpf.ViewModels
         public async Task LoadBooksAsync()
         {
             await using IUnitOfWork uow = new UnitOfWork();
-            Books = new ObservableCollection<Book>(await uow.Books.GetBooksByFilter(FilterText));
+            Books = new ObservableCollection<Book>(await uow.Books.GetBooksByFilterAsync(FilterText));
         }
 
         public static async Task<BaseViewModel> Create(IWindowController controller)

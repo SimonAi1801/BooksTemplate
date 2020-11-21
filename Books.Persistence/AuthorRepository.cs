@@ -16,5 +16,11 @@ namespace Books.Persistence
         {
             _dbContext = dbContext;
         }
+
+        public async Task<Author[]> GetAllAuthorsAsync()
+        => await _dbContext.Authors
+                           .Include(ba => ba.BookAuthors)
+                           .ThenInclude(b => b.Book)
+                           .ToArrayAsync();
     }
 }
