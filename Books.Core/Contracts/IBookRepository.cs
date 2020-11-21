@@ -11,5 +11,7 @@ namespace Books.Core.Contracts
         Task<Book[]> GetAllBooksAsync();
 
         Task<Book[]> GetBooksByFilter(string filterText);
+
+        void DeleteBook(Book book);
     }
 }

@@ -20,6 +20,9 @@ namespace Books.Persistence
         public async Task AddRangeAsync(IEnumerable<Book> books)
         => await _dbContext.AddRangeAsync(books);
 
+        public void DeleteBook(Book book)
+        => _dbContext.Books.Remove(book);
+
         public async Task<Book[]> GetAllBooksAsync()
         => await _dbContext.Books
                            .Include(_ => _.BookAuthors)

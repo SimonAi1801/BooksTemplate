@@ -11,6 +11,63 @@
         BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}"
         Title="Bücherliste" Height="350" Width="820">
 
+    <Grid ShowGridLines="false">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="5"/>
+        </Grid.ColumnDefinitions>
 
+        <Label Grid.Row="1" Grid.Column="1" Content="Suche nach Titel:"/>
+        <TextBox Grid.Row="1" Grid.Column="3" 
+                 HorizontalAlignment="Stretch" 
+                 Margin="5,5,5,5"
+                 Text="{Binding Path=FilterText, 
+                 UpdateSourceTrigger=PropertyChanged}"
+                 />
+        <DataGrid Grid.Row="3" Grid.Column="0" 
+                  Grid.ColumnSpan="11"
+                  ItemsSource="{Binding Path=Books}"
+                  SelectedItem="{Binding Path=SelectedBook}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Titel" Width="350" 
+                                    Binding="{Binding Path=Title}"/>
+                <DataGridTextColumn Header="Autoren" Width="200" 
+                                    Binding="{Binding Path=Authors}"/>
+                <DataGridTextColumn Header="Verlag" Width="150" 
+                                    Binding="{Binding Path=Publishers}"/>
+                <DataGridTextColumn Header="ISBN" Width="80" 
+                                    Binding="{Binding Path=Isbn}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Grid.Column="5" Grid.Row="5"
+                Content="Neu" Margin="5,5,5,5" 
+                Command="{Binding Path=CmdNewBook}"/>
+        <Button Grid.Column="7" Grid.Row="5"
+                Content="Bearbeiten" Margin="5,5,5,5"
+                Command="{Binding Path=CmdEditBook}"/>
+        <Button Grid.Column="9" Grid.Row="5"
+                Content="Löschen" Margin="5,5,5,5"
+                Command="{Binding Path=CmdDeleteBook}"/>
+    </Grid>
 </controls:MetroWindow>
 

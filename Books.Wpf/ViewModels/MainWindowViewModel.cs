@@ -2,12 +2,15 @@
 using Books.Core.Entities;
 using Books.Persistence;
 using Books.Wpf.Common;
+using Books.Wpf.Views;
+using ControlzEx.Standard;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Books.Wpf.ViewModels
 {
@@ -16,6 +19,9 @@ namespace Books.Wpf.ViewModels
         private ObservableCollection<Book> _books;
         private Book _selectedBook;
         private string _filterText;
+        private ICommand _cmdNewBook;
+        private ICommand _cmdEditBook;
+        private ICommand _cmdDeleteBook;
 
         public ObservableCollection<Book> Books
         {
@@ -27,7 +33,6 @@ namespace Books.Wpf.ViewModels
             }
         }
 
-
         public Book SelectedBook
         {
             get => _selectedBook;
@@ -37,7 +42,6 @@ namespace Books.Wpf.ViewModels
                 OnPropertyChanged(nameof(SelectedBook));
             }
         }
-
 
         public string FilterText
         {
@@ -50,21 +54,66 @@ namespace Books.Wpf.ViewModels
             }
         }
 
-
         public MainWindowViewModel() : base(null)
         {
         }
 
         public MainWindowViewModel(IWindowController windowController) : base(windowController)
         {
-            LoadCommands();
         }
 
-        private void LoadCommands()
+        public ICommand CmdNewBook
         {
+            get 
+            {
+                if (_cmdNewBook == null)
+                {
+                    _cmdNewBook = new RelayCommand(
+                        execute: _ => this.Controller.ShowWindow(new BookEditCreateViewModel(Controller, null)),
+                        canExecute: _ => true);
+                }
+                return _cmdNewBook;
+            }
         }
 
 
+
+        public ICommand CmdEditBook
+        {
+            get 
+            {
+                if (_cmdEditBook == null)
+                {
+                    _cmdEditBook = new RelayCommand(
+                        execute: _ => Controller.ShowWindow(new BookEditCreateViewModel(Controller, SelectedBook)),
+                        canExecute: _ => SelectedBook != null);
+                }
+                return _cmdEditBook; 
+            }
+        }
+
+
+        public ICommand CmdDeleteBook
+        {
+            get 
+            {
+                if (_cmdDeleteBook == null)
+                {
+                    _cmdDeleteBook = new RelayCommand(
+                        execute: async _ => await DeleteAsync(SelectedBook),
+                        canExecute: _ => SelectedBook != null);
+                }
+                return _cmdDeleteBook; 
+            }
+        }
+
+        private async Task DeleteAsync(Book selectedBook)
+        {
+            await using IUnitOfWork uow = new UnitOfWork();
+            uow.Books.DeleteBook(selectedBook);
+            await uow.SaveChangesAsync();
+            await LoadBooksAsync();
+        }
 
         /// <summary>
         /// Lädt die gefilterten Buchdaten
@@ -72,8 +121,7 @@ namespace Books.Wpf.ViewModels
         public async Task LoadBooksAsync()
         {
             await using IUnitOfWork uow = new UnitOfWork();
-            var books = await uow.Books.GetBooksByFilter(FilterText);
-            Books = new ObservableCollection<Book>(books);
+            Books = new ObservableCollection<Book>(await uow.Books.GetBooksByFilter(FilterText));
         }
 
         public static async Task<BaseViewModel> Create(IWindowController controller)

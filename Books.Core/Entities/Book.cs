@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text;
 
 namespace Books.Core.Entities
 {
@@ -21,6 +22,24 @@ namespace Books.Core.Entities
         [IsbnValidation]
         [Required, MaxLength(13)]
         public string Isbn { get; set; }
+
+        public string Authors 
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+
+                foreach (var author in BookAuthors)
+                {
+                    if (sb.Length > 1)
+                    {
+                        sb.Append("/");
+                    }
+                    sb.Append(author.Author.Name);
+                }
+                return sb.ToString();
+            }
+        }
 
         public Book()
         {
