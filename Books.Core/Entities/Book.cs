@@ -41,12 +41,36 @@ namespace Books.Core.Entities
         public static bool CheckIsbn(string isbn)
         {
             bool isValid = false;
+            if (isbn == null)
+            {
+                return false;
+                throw new ArgumentNullException(nameof(Isbn));
+            }
+
+            if (isbn.Length != 10)
+            {
+                return false;
+                throw new Exception("Isbn has not 10 chars!");
+            }
+
+            int sum = 0;
             for (int i = isbn.Length - 1; i >= 0; i--)
             {
-                if (isbn[i].Equals("x") || isbn[i].Equals("X"))
-                {
 
+                if (isbn.ToLower()[i].Equals('x'))
+                {
+                    sum += 10 * (i + 1);
                 }
+                else
+                {
+                    int digit = Convert.ToInt32(isbn[i]) - '0';
+                    sum += digit * (i + 1);
+                }
+            }
+
+            if (sum % 11 == 0)
+            {
+                isValid = true;
             }
             return isValid;
         }

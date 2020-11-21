@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace Books.Persistence
 {
-  public class BookRepository : IBookRepository
-  {
-    private readonly ApplicationDbContext _dbContext;
-
-    public BookRepository(ApplicationDbContext dbContext)
+    public class BookRepository : IBookRepository
     {
-      _dbContext = dbContext;
-    }
+        private readonly ApplicationDbContext _dbContext;
 
-    public Task AddRangeAsync(IEnumerable<Book> books)
-    {
-      throw new NotImplementedException();
+        public BookRepository(ApplicationDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
+        public Task AddRangeAsync(IEnumerable<Book> books)
+        {
+            throw new NotImplementedException();
+        }
     }
-  }
 
 }

@@ -9,45 +9,44 @@ namespace Books.ImportConsole
     public static class ImportController
     {
         private const string FileName = "books.csv";
+        private const char Seperator = '~';
         public static IEnumerable<Book> ReadBooksFromCsv()
         {
             string[][] matrix = MyFile.ReadStringMatrixFromCsv(FileName, false);
+            IList<Book> books = new List<Book>();
+            IList<BookAuthor> bookAuthors = new List<BookAuthor>();
+            IDictionary<string, Author> authors = new Dictionary<string, Author>();
 
-            var authors = matrix.GroupBy(line => line[0])
-                                .Select(grp => new Author()
-                                {
-                                    Name = grp.Key
-                                })
-                                .ToArray();
-
-            var books = matrix.GroupBy(line => line[1] + ';' +
-                                               line[2] + ';' +
-                                               line[3])
-                               .Select(grp => new Book()
-                               {
-                                   Title = grp.Key.Split(';')[0],
-                                   Publishers = grp.Key.Split(';')[1],
-                                   Isbn = grp.Key.Split(';')[2]
-                               })
-                               .ToArray();
-
-            var bookAutors = matrix.GroupBy(line => line[0] + ';' +
-                                                    line[3])
-                                   .Select(grp => new BookAuthor()
-                                   {
-                                       Author = authors.SingleOrDefault(a => a.Name.Equals(grp.Key.Split(';')[0])),
-                                       Book = books.SingleOrDefault(b => b.Isbn.Equals(grp.Key.Split(';')[1]))
-                                   })
-                                   .ToArray();
-
-            foreach (var author in authors)
+            foreach (var line in matrix)
             {
-                author.BookAuthors = bookAutors.Where(ba => ba.Author.Name.Equals(author.Name)).ToList();
-            }
+                Book book = new Book
+                {
+                    Title = line[1],
+                    Publishers = line[2],
+                    Isbn = line[3]
+                };
 
-            foreach (var book in books)
-            {
-                book.BookAuthors = bookAutors.Where(ba => ba.Book.Isbn.Equals(book.Isbn)).ToList();
+                string[] names = line[0].Split(Seperator);
+                foreach (var name in names)
+                {
+                    Author author;
+                    if (!authors.TryGetValue(name, out author))
+                    {
+                        author = new Author
+                        {
+                            Name = name
+                        };
+                        authors.Add(name, author);
+                    }
+
+                    BookAuthor bookAuthor = new BookAuthor
+                    {
+                        Author = author,
+                        Book = book
+                    };
+                    book.BookAuthors.Add(bookAuthor);
+                }
+                books.Add(book);
             }
             return books;
         }
