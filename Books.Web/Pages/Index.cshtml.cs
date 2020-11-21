@@ -10,18 +10,25 @@ using System.Threading.Tasks;
 
 namespace Books.Web.Pages
 {
-  public class IndexModel : PageModel
-  {
-    private readonly IUnitOfWork _uow;
-
-    public IndexModel(IUnitOfWork uow)
+    public class IndexModel : PageModel
     {
-      _uow = uow;
-    }
+        private readonly IUnitOfWork _uow;
 
-    public IActionResult OnGet()
-    {
-      return Page();
+        public IndexModel(IUnitOfWork uow)
+        {
+            _uow = uow;
+        }
+
+        public IActionResult OnGet()
+        {
+            //var books = await _uow.Books.GetAllBooksAsync()
+            //                            .Result
+            //                            .Select(_ => 
+            //                            {
+            //                                Author = _.BookAuthors.
+            //                            })
+            
+            return Page();
+        }
     }
-  }
 }

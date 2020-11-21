@@ -29,7 +29,7 @@ namespace Books.Wpf.Views
         private async void TextBoxTitleFilter_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             var model = (MainWindowViewModel) DataContext;
-            await model.LoadBooks();
+            await model.LoadBooksAsync();
         }
     }
 }
