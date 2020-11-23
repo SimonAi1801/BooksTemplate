@@ -20,6 +20,7 @@ namespace Books.Wpf.ViewModels
         private ObservableCollection<BookAuthor> _bookAuthors;
         private ObservableCollection<string> _publishers;
         private Author _selectedAuthor;
+        private BookAuthor _selectdBookAuthor;
         private string _selectedPublisher;
         private string _isbn;
         private string _title;
@@ -32,7 +33,7 @@ namespace Books.Wpf.ViewModels
             {
                 _title = value;
                 OnPropertyChanged(nameof(Title));
-                //Validate();
+                ValidateViewModelProperties();
             }
         }
 
@@ -45,7 +46,7 @@ namespace Books.Wpf.ViewModels
             { 
                 _isbn = value;
                 OnPropertyChanged(nameof(Isbn));
-                //Validate();
+                ValidateViewModelProperties();
             }
         }
 
@@ -99,6 +100,19 @@ namespace Books.Wpf.ViewModels
             }
         }
 
+
+
+        public BookAuthor SelectedBookAuthor
+        {
+            get => _selectdBookAuthor;
+            set 
+            { 
+                _selectdBookAuthor = value;
+                OnPropertyChanged(nameof(SelectedBookAuthor));
+            }
+        }
+
+
         public BookEditCreateViewModel() : base(null)
         {
         }
@@ -108,7 +122,7 @@ namespace Books.Wpf.ViewModels
             _book = book;
         }
 
-        public static async Task<BaseViewModel> Create(WindowController controller, Book book)
+        public static async Task<BaseViewModel> Create(IWindowController controller, Book book)
         {
             var model = new BookEditCreateViewModel(controller, book);
             await model.LoadData();
@@ -137,22 +151,18 @@ namespace Books.Wpf.ViewModels
 
             _isbn = _book.Isbn;
             OnPropertyChanged(Isbn);
-            //Validate();
+            ValidateViewModelProperties();
             SelectedPublisher = _book.Publishers;
-
             BookAuthors = new ObservableCollection<BookAuthor>(_book.BookAuthors);
         }
 
 
         public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            ValidationResult result = new IsbnValidation().GetValidationResult(Isbn, new ValidationContext(Isbn));
-
-            if (result != null && result != ValidationResult.Success)
+            if (!(Book.CheckIsbn(Isbn)))
             {
                 yield return new ValidationResult($"Isbn {Isbn} ist ungültig", new string[] { nameof(Isbn) });
             }
         }
-
     }
 }

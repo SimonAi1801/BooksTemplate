@@ -69,14 +69,14 @@ namespace Books.Wpf.ViewModels
                 if (_cmdNewBook == null)
                 {
                     _cmdNewBook = new RelayCommand(
-                        execute: _ => this.Controller.ShowWindow(new BookEditCreateViewModel(Controller, null)),
+                        execute: async _ => await NewBookAsync(),
                         canExecute: _ => true);
                 }
                 return _cmdNewBook;
             }
         }
 
-
+   
 
         public ICommand CmdEditBook
         {
@@ -85,17 +85,16 @@ namespace Books.Wpf.ViewModels
                 if (_cmdEditBook == null)
                 {
                     _cmdEditBook = new RelayCommand(
-                        execute: _ => Controller.ShowWindow(new BookEditCreateViewModel(Controller, SelectedBook)),
+                        execute: async _ => await EditbookAsync(),
                         canExecute: _ => SelectedBook != null);
                 }
                 return _cmdEditBook; 
             }
         }
 
-
         public ICommand CmdDeleteBook
         {
-            get 
+            get
             {
                 if (_cmdDeleteBook == null)
                 {
@@ -103,9 +102,23 @@ namespace Books.Wpf.ViewModels
                         execute: async _ => await DeleteAsync(SelectedBook),
                         canExecute: _ => SelectedBook != null);
                 }
-                return _cmdDeleteBook; 
+                return _cmdDeleteBook;
             }
         }
+        private async Task NewBookAsync()
+        {
+            var window = await BookEditCreateViewModel.Create(Controller, null);
+            Controller.ShowWindow(window, true);
+            await LoadBooksAsync();
+        }
+
+        private async Task EditbookAsync()
+        {
+            var window = await BookEditCreateViewModel.Create(Controller, SelectedBook);
+            Controller.ShowWindow(window, true);
+            await LoadBooksAsync();
+        }
+
 
         private async Task DeleteAsync(Book selectedBook)
         {
