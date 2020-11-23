@@ -37,6 +37,9 @@ namespace Books.Persistence
                            .Distinct()
                            .ToArrayAsync();
 
+        public async Task<Book> GetBookByIdAsync(int id)
+        => await _dbContext.Books.SingleOrDefaultAsync(b => b.Id == id);
+
         public async Task<Book[]> GetBooksByFilterAsync(string filterText)
         => await _dbContext.Books
                            .Where(b => EF.Functions.Like(b.Title, $"%{filterText}%"))

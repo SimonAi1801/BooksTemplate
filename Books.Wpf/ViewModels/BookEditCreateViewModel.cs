@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Books.Wpf.ViewModels
 {
@@ -24,6 +25,7 @@ namespace Books.Wpf.ViewModels
         private string _selectedPublisher;
         private string _isbn;
         private string _title;
+        private bool _isNewBook = false;
 
         [Required(ErrorMessage = "Titel muss angegeben werden!")]
         public string Title
@@ -42,8 +44,8 @@ namespace Books.Wpf.ViewModels
         public string Isbn
         {
             get => _isbn;
-            set 
-            { 
+            set
+            {
                 _isbn = value;
                 OnPropertyChanged(nameof(Isbn));
                 ValidateViewModelProperties();
@@ -53,8 +55,8 @@ namespace Books.Wpf.ViewModels
         public ObservableCollection<Author> Authors
         {
             get => _authors;
-            set 
-            { 
+            set
+            {
                 _authors = value;
                 OnPropertyChanged();
             }
@@ -63,8 +65,8 @@ namespace Books.Wpf.ViewModels
         public Author SelectedAuthor
         {
             get => _selectedAuthor;
-            set 
-            { 
+            set
+            {
                 _selectedAuthor = value;
                 OnPropertyChanged();
             }
@@ -73,8 +75,8 @@ namespace Books.Wpf.ViewModels
         public ObservableCollection<string> Publishers
         {
             get => _publishers;
-            set 
-            { 
+            set
+            {
                 _publishers = value;
                 OnPropertyChanged();
             }
@@ -83,8 +85,8 @@ namespace Books.Wpf.ViewModels
         public string SelectedPublisher
         {
             get => _selectedPublisher;
-            set 
-            { 
+            set
+            {
                 _selectedPublisher = value;
                 OnPropertyChanged();
             }
@@ -93,8 +95,8 @@ namespace Books.Wpf.ViewModels
         public ObservableCollection<BookAuthor> BookAuthors
         {
             get => _bookAuthors;
-            set 
-            { 
+            set
+            {
                 _bookAuthors = value;
                 OnPropertyChanged();
             }
@@ -105,8 +107,8 @@ namespace Books.Wpf.ViewModels
         public BookAuthor SelectedBookAuthor
         {
             get => _selectdBookAuthor;
-            set 
-            { 
+            set
+            {
                 _selectdBookAuthor = value;
                 OnPropertyChanged(nameof(SelectedBookAuthor));
             }
@@ -143,6 +145,7 @@ namespace Books.Wpf.ViewModels
             if (_book == null)
             {
                 _book = new Book();
+                _isNewBook = true;
                 return;
             }
 
@@ -156,6 +159,114 @@ namespace Books.Wpf.ViewModels
             BookAuthors = new ObservableCollection<BookAuthor>(_book.BookAuthors);
         }
 
+        private ICommand _cmdAddAuthor;
+
+        public ICommand CmdAddAuthor
+        {
+            get
+            {
+                if (_cmdAddAuthor == null)
+                {
+                    _cmdAddAuthor = new RelayCommand(
+                        execute: _ => AddAuthor(),
+                        canExecute: _ => true);
+                }
+                return _cmdAddAuthor;
+            }
+        }
+
+        private ICommand _cmdDeleteAuthor;
+
+        public ICommand CmdDeleteAuthor
+        {
+            get
+            {
+                if (_cmdDeleteAuthor == null)
+                {
+                    _cmdDeleteAuthor = new RelayCommand(
+                        execute: _ => DeleteAuthor(),
+                        canExecute: _ => SelectedBookAuthor != null);
+                }
+                return _cmdDeleteAuthor;
+            }
+        }
+
+        private ICommand _cmdSaveBook;
+
+        public ICommand CmdSaveBook
+        {
+            get
+            {
+                if (_cmdSaveBook == null)
+                {
+                    _cmdSaveBook = new RelayCommand(
+                        execute: async _ => await SaveBookAsync(),
+                        canExecute: _ => IsValid);
+                }
+                return _cmdSaveBook;
+            }
+        }
+
+        private async Task SaveBookAsync()
+        {
+            await using IUnitOfWork uow = new UnitOfWork();
+            Book bookInDb;
+            if (_isNewBook)
+            {
+                bookInDb = _book;
+            }
+            else
+            {
+                bookInDb = await uow.Books.GetBookByIdAsync(_book.Id);
+            }
+
+            bookInDb.Title = _title;
+            bookInDb.Isbn = _isbn;
+            bookInDb.Publishers = _selectedPublisher;
+
+            foreach (var bookAuthor in _book.BookAuthors)
+            {
+                bookInDb.BookAuthors.Add(bookAuthor);
+            }
+
+            try
+            {
+                await uow.SaveChangesAsync();
+                Controller.CloseWindow(this);
+            }
+            catch (ValidationException vE)
+            {
+                if (vE is IEnumerable<string> properties)
+                {
+                    foreach (var property in properties)
+                    {
+                        Errors.Add(property, new List<string> { vE.ValidationResult.ErrorMessage });
+                    }
+                }
+                else
+                {
+                    DbError = vE.ValidationResult.ToString();
+                }
+            }
+        }
+
+        private void DeleteAuthor()
+        {
+            BookAuthors.Remove(_selectdBookAuthor);
+            OnPropertyChanged(nameof(BookAuthors));
+        }
+
+        private void AddAuthor()
+        {
+            BookAuthor bookAuthor = new BookAuthor
+            {
+                Author = _selectedAuthor,
+                Book = _book
+            };
+            _book.BookAuthors.Add(bookAuthor);
+            OnPropertyChanged(nameof(BookAuthors));
+            
+        }
 
         public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
